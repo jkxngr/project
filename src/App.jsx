@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/template" element={<FormBuilderr />} />
           <Route path="/formfiller/:templateId" element={<FormFiller />} />
-          <Route path="/templatelist" element={<TemplateList />} />
+          <Route path="/" element={<TemplateList />} />
         </Routes>
       </UserProvider>
     </div>
