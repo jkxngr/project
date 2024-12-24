@@ -8,7 +8,7 @@ const TemplateList = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/templates");
+        const res = await axios.get("https://my-course-project-25cbbc9b712d.herokuapp.com/api/templates");
         setTemplates(res.data);
       } catch (err) {
         console.error("Error fetching templates:", err);

@@ -15,7 +15,7 @@ const FormBuilder = () => {
   React.useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/topics");
+        const res = await axios.get("https://my-course-project-25cbbc9b712d.herokuapp.com/api/topics");
         setTopics(res.data);
       } catch (err) {
         console.error("Error fetching topics:", err);
@@ -86,7 +86,7 @@ const FormBuilder = () => {
         ...processedQuestions,
       };
 
-      await axios.post("http://localhost:5000/api/templates", payload);
+      await axios.post("https://my-course-project-25cbbc9b712d.herokuapp.com/api/templates", payload);
       alert("Template saved successfully!");
       navigate("/");
     } catch (err) {

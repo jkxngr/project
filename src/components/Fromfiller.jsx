@@ -12,7 +12,7 @@ const FormFiller = () => {
   useEffect(() => {
     const fetchTemplate = async () => {
       try {
-        const res = await axios.get(`http://localhost:8080/api/templates/${templateId}`);
+        const res = await axios.get(`https://my-course-project-25cbbc9b712d.herokuapp.com/api/templates/${templateId}`);
         setTemplate(res.data);
       } catch (err) {
         console.error(err);
@@ -29,7 +29,7 @@ const FormFiller = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/api/forms", {
+      await axios.post("https://my-course-project-25cbbc9b712d.herokuapp.com/api/forms", {
         template_id: templateId,
         user_id: user.id,
         answers,
