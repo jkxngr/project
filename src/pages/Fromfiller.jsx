@@ -73,6 +73,30 @@ const FormFiller = () => {
           </div>
         )}
 
+        {template.custom_string3_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_string3_question}</label>
+            <input
+              type="text"
+              className="form-control"
+              value={answers.custom_string3 || ""}
+              onChange={(e) => handleChange("custom_string3", e.target.value)}
+            />
+          </div>
+        )}
+
+        {template.custom_string4_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_string4_question}</label>
+            <input
+              type="text"
+              className="form-control"
+              value={answers.custom_string4 || ""}
+              onChange={(e) => handleChange("custom_string4", e.target.value)}
+            />
+          </div>
+        )}
+
         {template.custom_text1_state && (
           <div className="mb-3">
             <label className="form-label">{template.custom_text1_question}</label>
@@ -91,6 +115,28 @@ const FormFiller = () => {
               className="form-control"
               value={answers.custom_text2 || ""}
               onChange={(e) => handleChange("custom_text2", e.target.value)}
+            />
+          </div>
+        )}
+
+        {template.custom_text3_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_text3_question}</label>
+            <textarea
+              className="form-control"
+              value={answers.custom_text3 || ""}
+              onChange={(e) => handleChange("custom_text3", e.target.value)}
+            />
+          </div>
+        )}
+
+        {template.custom_text4_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_text4_question}</label>
+            <textarea
+              className="form-control"
+              value={answers.custom_text4 || ""}
+              onChange={(e) => handleChange("custom_text4", e.target.value)}
             />
           </div>
         )}
@@ -119,6 +165,30 @@ const FormFiller = () => {
           </div>
         )}
 
+        {template.custom_int3_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_int3_question}</label>
+            <input
+              type="number"
+              className="form-control"
+              value={answers.custom_int3 || ""}
+              onChange={(e) => handleChange("custom_int3", e.target.value)}
+            />
+          </div>
+        )}
+
+        {template.custom_int4_state && (
+          <div className="mb-3">
+            <label className="form-label">{template.custom_int4_question}</label>
+            <input
+              type="number"
+              className="form-control"
+              value={answers.custom_int4 || ""}
+              onChange={(e) => handleChange("custom_int4", e.target.value)}
+            />
+          </div>
+        )}
+
         {template.custom_checkbox1_state && (
           <div className="mb-3 form-check">
             <input
@@ -140,6 +210,30 @@ const FormFiller = () => {
               onChange={(e) => handleChange("custom_checkbox2", e.target.checked)}
             />
             <label className="form-check-label">{template.custom_checkbox2_question}</label>
+          </div>
+        )}
+
+        {template.custom_checkbox3_state && (
+          <div className="mb-3 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={answers.custom_checkbox3 || false}
+              onChange={(e) => handleChange("custom_checkbox3", e.target.checked)}
+            />
+            <label className="form-check-label">{template.custom_checkbox3_question}</label>
+          </div>
+        )}
+
+        {template.custom_checkbox4_state && (
+          <div className="mb-3 form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              checked={answers.custom_checkbox4 || false}
+              onChange={(e) => handleChange("custom_checkbox4", e.target.checked)}
+            />
+            <label className="form-check-label">{template.custom_checkbox4_question}</label>
           </div>
         )}
 
