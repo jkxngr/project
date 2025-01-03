@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useGetTemplate } from "../services/template/useGetTemplate";
-import { Link, useNavigate } from "react-router-dom";
-import { Spinner, Button, Form, Navbar, Container, Nav } from "react-bootstrap";
+import { Spinner, Table } from "react-bootstrap";
+import Header from "../components/Header";
 import TemplateCard from "../components/TemplateCard";
+import { useNavigate } from "react-router-dom";
 
 const TemplateList = () => {
   const { data: templates, isLoading, isError, error } = useGetTemplate();
@@ -40,43 +41,12 @@ const TemplateList = () => {
 
   return (
     <div>
-      <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand href="/">The App</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="/create-template">Create Template</Nav.Link>
-              {user?.role === "admin" && <Nav.Link href="/admin">Admin Page</Nav.Link>}
-              <Nav.Link href="/my-templates">My Templates</Nav.Link>
-            </Nav>
-            <Form className="d-flex">
-              <Form.Control
-                type="search"
-                placeholder="Search"
-                className="me-2"
-                aria-label="Search"
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-              <Button variant="outline-success">Search</Button>
-            </Form>
-            <Nav>
-              {!user ? (
-                <>
-                  <Nav.Link href="/login">Sign In</Nav.Link>
-                  <Nav.Link href="/register">Sign Up</Nav.Link>
-                </>
-              ) : (
-                <Button variant="outline-danger" onClick={handleLogout}>
-                  Logout
-                </Button>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
+      <Header
+        user={user}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        handleLogout={handleLogout}
+      />
       <div className="container my-5">
         <h2 className="text-center mb-4">Available Templates</h2>
         {filteredTemplates.length === 0 ? (

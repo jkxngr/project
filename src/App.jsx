@@ -9,6 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ProtectedRoute from "./config/ProtectedRoute";
 import AdminPage from "./pages/Admin";
 import MyTemplates from "./pages/MyTemplates";
+import EditTemplate from "./pages/EditTemplate";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,7 +61,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="/my-templates"
           element={
             <ProtectedRoute user={user} roles={["user", "admin"]}>
@@ -69,6 +70,14 @@ function App() {
           }
         />
         <Route path="/formfiller/:templateId" element={<FormFiller />} />
+        <Route
+          path="/edit-template/:templateId"
+          element={
+            <ProtectedRoute user={user} roles={["user", "admin"]}>
+              <EditTemplate user={user} />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

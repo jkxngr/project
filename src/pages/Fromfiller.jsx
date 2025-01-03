@@ -2,25 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
-
+import { useGetTemplateById } from "../services/template/useGetTemplateById";
+import { usePostForms } from "../services/form/usePostForms";
 const FormFiller = () => {
   const { user } = useUser();
   const { templateId } = useParams();
-  const [template, setTemplate] = useState(null);
+  const { data: template, isLoading, error } = useGetTemplateById(templateId);
+  const postForm = usePostForms();
   const [answers, setAnswers] = useState({});
-
-  useEffect(() => {
-    const fetchTemplate = async () => {
-      try {
-        const res = await axios.get(`https://my-course-project-25cbbc9b712d.herokuapp.com/api/templates/${templateId}`);
-        setTemplate(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchTemplate();
-  }, [templateId]);
 
   const handleChange = (id, value) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -29,7 +18,7 @@ const FormFiller = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://my-course-project-25cbbc9b712d.herokuapp.com/api/forms", {
+      await postForm.mutateAsync({
         template_id: templateId,
         user_id: user.id,
         answers,
@@ -40,7 +29,6 @@ const FormFiller = () => {
       alert("Error submitting form");
     }
   };
-
   if (!template) {
     return <p>Loading...</p>;
   }

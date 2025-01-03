@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { usePostTemplate } from "../services/template/usePostTemplate";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEditTemplate } from "../services/template/useEditTemplate";
 import { useGetTopics } from "../services/topic/useGetTopics";
+import { useGetTemplateById } from "../services/template/useGetTemplateById";
 
-const FormBuilder = ({ user }) => {
+const EditTemplate = ({ user }) => {
   const navigate = useNavigate();
+  const { templateId } = useParams();
 
-  const { data: topics, isLoading, error } = useGetTopics(); 
-  const { mutate: postTemplate } = usePostTemplate(); 
+  const { data: topics, isLoading: isLoadingTopics, error: errorTopics } = useGetTopics();
+  const { data: template, isLoading: isLoadingTemplate, error: errorTemplate } = useGetTemplateById(templateId);
+  const { mutate: editTemplate } = useEditTemplate();
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
     }
   }, [user, navigate]);
-  console.log("user:", user);
-  
+
   const questionTypes = [
     "single-line",
     "multi-line",
@@ -28,7 +30,7 @@ const FormBuilder = ({ user }) => {
     control,
     register,
     handleSubmit,
-    watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm({
@@ -46,68 +48,57 @@ const FormBuilder = ({ user }) => {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control,
     name: "questions",
   });
 
-  const watchQuestions = watch("questions");
+  useEffect(() => {
+    if (template) {
+      reset({
+        title: template.title || "",
+        description: template.description || "",
+        topic_id: template.topic_id || "",
+        questions: template.questions || [
+          {
+            type: questionTypes[0],
+            title: "",
+            options: [],
+          },
+        ],
+      });
+    }
+  }, [template, reset]);
 
   useEffect(() => {
-    if (topics?.length > 0) {
+    if (topics?.length > 0 && !template?.topic_id) {
       setValue("topic_id", topics[0].topic_id);
     }
-  }, [topics, setValue]);
+  }, [topics, setValue, template]);
 
   const onSubmit = (data) => {
-    const counters = { string: 0, text: 0, int: 0, checkbox: 0 };
-
-    const processedQuestions = data.questions.reduce((acc, q) => {
-      const typeMap = {
-        "single-line": "string",
-        "multi-line": "text",
-        "positive-integer": "int",
-        checkbox: "checkbox",
-      };
-
-      const typePrefix = typeMap[q.type];
-      counters[typePrefix] += 1;
-
-      acc[`custom_${typePrefix}${counters[typePrefix]}_state`] = true;
-      acc[`custom_${typePrefix}${counters[typePrefix]}_question`] = q.title;
-
-      if (typePrefix === "checkbox") {
-        acc[`custom_${typePrefix}${counters[typePrefix]}_options`] = q.options;
-      }
-
-      return acc;
-    }, {});
-
     const payload = {
-      title: data.title,
-      description: data.description,
-      topic_id: data.topic_id,
+      ...data,
       user_id: user.id,
-      ...processedQuestions,
     };
 
-    postTemplate(payload, {
+    editTemplate(payload, {
       onSuccess: () => {
-        alert("Template saved successfully!");
+        alert("Template updated successfully!");
         navigate("/");
       },
       onError: () => {
-        alert("Error saving template.");
+        alert("Error updating template.");
       },
     });
   };
 
-  if (isLoading) return <div>Loading topics...</div>;
-  if (error) return <div>Error fetching topics!</div>;
+  if (isLoadingTopics || isLoadingTemplate) return <div>Loading...</div>;
+  if (errorTopics || errorTemplate) return <div>Error fetching data!</div>;
 
   return (
     <div className="container my-5">
-      <h2 className="text-center mb-4">Create a Form Template</h2>
+      <h2 className="text-center mb-4">Edit Form Template</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="p-4 border shadow-sm rounded bg-light"
@@ -197,56 +188,7 @@ const FormBuilder = ({ user }) => {
               )}
             </div>
 
-            {watchQuestions[index]?.type === "checkbox" && (
-              <div className="mb-3">
-                <h4>Options</h4>
-                <Controller
-                  control={control}
-                  name={`questions.${index}.options`}
-                  defaultValue={[]}
-                  render={({ field }) => (
-                    <div>
-                      {field.value.map((option, optionIndex) => (
-                        <div key={optionIndex} className="d-flex mb-2">
-                          <input
-                           
-                            type="text"
-                            className="form-control me-2"
-                            placeholder="Option text"
-                          />
-                          <button
-                            type="button"
-                            onClick={() =>
-                              field.onChange(
-                                field.value.filter((_, i) => i !== optionIndex)
-                              )
-                            }
-                            className="btn btn-light"
-                          >
-                            <i className="bi bi-x"></i>
-                          </button>
-                        </div>
-                      ))}
-                      <button
-                        type="button"
-                        onClick={() => field.onChange([...field.value, ""])}
-                        className="btn btn-secondary"
-                      >
-                        Add Option
-                      </button>
-                    </div>
-                  )}
-                />
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="btn btn-outline-danger"
-            >
-             <i className="bi bi-trash"></i>
-            </button>
+       
           </div>
         ))}
         <button
@@ -269,4 +211,4 @@ const FormBuilder = ({ user }) => {
   );
 };
 
-export default FormBuilder;
+export default EditTemplate;

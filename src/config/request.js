@@ -1,6 +1,6 @@
 import axios from "axios";
 const request = axios.create({
-  baseURL: "https://my-course-project-25cbbc9b712d.herokuapp.com/api",
+  baseURL: "http://localhost:3306/api",
   headers: {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   },

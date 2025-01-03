@@ -4,10 +4,11 @@ import { useGetUser } from "../services/user/useGetUser";
 import { useDeleteUser } from "../services/user/useDeleteUser";
 import { useEditUser } from "../services/user/useEditUser";
 import { useDeleteAdmin } from "../services/user/useDeleteAdmin";
-import { useBlockUser } from "../services/user/useBlockUser";
-import { useUnblockUser } from "../services/user/useUnblockUser";
 import { Modal, Button, Table } from "react-bootstrap";
 import { useQueryClient } from "@tanstack/react-query";
+import { useBlockUser } from "../services/user/useBlockuser";
+import { useUnblockUser } from "../services/user/useUnblockUser";
+import AdminCard from "../components/AdminCard";
 
 const AdminPage = () => {
   const { user } = useUser();
@@ -15,9 +16,9 @@ const AdminPage = () => {
   const deleteUser = useDeleteUser();
   const editUser = useEditUser();
   const deleteAdmin = useDeleteAdmin();
+  const queryClient = useQueryClient();
   const blockUser = useBlockUser();
   const unblockUser = useUnblockUser();
-  const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -66,13 +67,15 @@ const AdminPage = () => {
       });
     }
   };
-
   const handleBlock = (userId) => {
-    console.log(userId);
     blockUser.mutate(userId, {
       onSuccess: () => {
         queryClient.invalidateQueries(["users"]);
         alert("User blocked successfully!");
+      },
+      onError: (error) => {
+        console.error("Error blocking user:", error);
+        alert("Failed to block user.");
       },
     });
   };
@@ -83,9 +86,12 @@ const AdminPage = () => {
         queryClient.invalidateQueries(["users"]);
         alert("User unblocked successfully!");
       },
+      onError: (error) => {
+        console.error("Error unblocking user:", error);
+        alert("Failed to unblock user.");
+      },
     });
   };
-
   return (
     <div className="container mt-5">
       <h2>Admin Page</h2>
@@ -101,32 +107,40 @@ const AdminPage = () => {
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.user_id}>
+            <tr key={user.id}>
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>{user.status}</td>
               <td>
-                <Button variant="warning" onClick={() => handleEdit(user)}>
-                  Edit
-                </Button>{" "}
-                <Button variant="danger" onClick={() => handleDelete(user)}>
-                  Delete
-                </Button>{" "}
+                <button
+                  className="btn btn-outline-warning"
+                  onClick={() => handleEdit(user)}
+                >
+                  <i className="bi bi-pen"></i>
+                </button>
+                <button
+                  variant="danger"
+                  type="button"
+                  className="btn btn-outline-danger"
+                  onClick={() => handleDelete(user)}
+                >
+                  <i className="bi bi-trash"></i>
+                </button>
                 {user.status === "blocked" ? (
-                  <Button
-                    variant="success"
+                  <button
+                    className="btn btn-outline-success"
                     onClick={() => handleUnblock(user)}
                   >
-                    Unblock
-                  </Button>
+                    <i className="bi bi-unlock-fill"></i>
+                  </button>
                 ) : (
-                  <Button
-                    variant="secondary"
+                  <button
+                    className="btn btn-outline-danger"
                     onClick={() => handleBlock(user)}
                   >
-                    Block
-                  </Button>
+                    <i className="bi bi-lock-fill"></i>
+                  </button>
                 )}
               </td>
             </tr>
@@ -134,69 +148,13 @@ const AdminPage = () => {
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit User</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label">
-                Name
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="name"
-                value={selectedUser?.name || ""}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, name: e.target.value })
-                }
-                disabled
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                id="email"
-                value={selectedUser?.email || ""}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
-                }
-                disabled
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="role" className="form-label">
-                Role
-              </label>
-              <select
-                className="form-control"
-                id="role"
-                value={selectedUser?.role || ""}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, role: e.target.value })
-                }
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <AdminCard
+        showModal={showModal}
+        setShowModal={setShowModal}
+        selectedUser={selectedUser}
+        setSelectedUser={setSelectedUser}
+        handleSave={handleSave}
+      />
     </div>
   );
 };
